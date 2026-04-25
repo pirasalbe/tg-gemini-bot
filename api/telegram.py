@@ -19,6 +19,7 @@ TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 def send_message(chat_id, text, **kwargs):
     """send text message"""
+    print(f"Sending message: {text} to {chat_id}")
     payload = {
         "chat_id": chat_id,
         "text": escape(text),
