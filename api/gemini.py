@@ -9,8 +9,6 @@ from .config import (
     new_chat_info,
 )
 
-import requests
-
 client = genai.Client(api_key=GOOGLE_API_KEY[0])
 
 _MODEL_VERSION = "gemini-flash-latest"
