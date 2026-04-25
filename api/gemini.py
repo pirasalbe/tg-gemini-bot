@@ -3,18 +3,27 @@ from io import BytesIO
 from google import genai
 import PIL.Image
 
-from .config import GOOGLE_API_KEY, generation_config, safety_settings, gemini_err_info, new_chat_info
+from .config import (
+    GOOGLE_API_KEY,
+    gemini_err_info,
+    new_chat_info,
+)
+
+import requests
 
 client = genai.Client(api_key=GOOGLE_API_KEY[0])
 
-_MODEL_VERSION = 'gemini-flash-latest'
+_MODEL_VERSION = "gemini-flash-latest"
 
 
 def list_models():
     """list all models"""
     return client.models.list()
 
+
 """ This function is deprecated """
+
+
 def generate_content(prompt: str) -> str:
     """generate text from prompt"""
     try:
@@ -29,7 +38,24 @@ def generate_text_with_image(prompt: str, image_bytes: BytesIO) -> str:
     """generate text from prompt and image"""
     img = PIL.Image.open(image_bytes)
     try:
-        response = client.models.generate_content(model=_MODEL_VERSION, contents=[prompt, img])
+        response = client.models.generate_content(
+            model=_MODEL_VERSION, contents=[prompt, img]
+        )
+        result = response.text
+    except Exception as e:
+        result = f"{gemini_err_info}\n{repr(e)}"
+    return result
+
+
+def generate_text_with_file(prompt: str, path: str) -> str:
+    """generate text from prompt and file"""
+    try:
+        # Upload to Gemini File API
+        file = genai.upload_file(path)
+
+        response = client.models.generate_content(
+            model=_MODEL_VERSION, contents=[prompt, file]
+        )
         result = response.text
     except Exception as e:
         result = f"{gemini_err_info}\n{repr(e)}"

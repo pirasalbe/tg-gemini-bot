@@ -1,9 +1,17 @@
-from typing import Dict
+from typing import Dict, Literal
 
 import requests
 from md2tgmd import escape
 
-from .config import BOT_TOKEN, defaut_photo_caption, send_message_log, send_photo_log, unnamed_user, unnamed_group
+from .config import (
+    BOT_TOKEN,
+    default_photo_caption,
+    default_media_caption,
+    send_message_log,
+    send_photo_log,
+    unnamed_user,
+    unnamed_group,
+)
 from .printLog import send_log
 
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -29,12 +37,36 @@ def send_imageMessage(chat_id, text, imageID):
         "chat_id": chat_id,
         "caption": escape(text),
         "parse_mode": "MarkdownV2",
-        "photo": imageID
+        "photo": imageID,
     }
     r = requests.post(f"{TELEGRAM_API}/sendPhoto", data=payload)
     print(f"Sent imageMessage: {text} to {chat_id}")
     send_log(f"{send_photo_log}\n```json\n{str(r)}```")
     return r
+
+
+def send_reaction(chat_id, message_id, emoji="👍"):
+    url = f"{TELEGRAM_API}/setMessageReaction"
+    payload = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+        "reaction": [{"type": "emoji", "emoji": emoji}],
+        "is_big": False,
+    }
+    return requests.post(url, json=payload)
+
+
+def get_file_url(file_id) -> str:
+    """process telegram photo url"""
+    r_file_id = requests.get(f"{TELEGRAM_API}/getFile?file_id={file_id}")
+    file_path = r_file_id.json().get("result").get("file_path")
+    download_url = f"{TELEGRAM_API}/{file_path}"
+    return download_url
+
+
+UpdateType = Literal[
+    "command", "text", "voice", "video_note", "video", "audio", "photo", ""
+]
 
 
 class Update:
@@ -44,13 +76,19 @@ class Update:
         self.chat_id = update["message"]["chat"]["id"]
         self.from_type = update["message"]["chat"]["type"]
         self.is_group: bool = self._is_group()
-        self.type = self._type()
+        self.type: UpdateType = self._type()
+        self.media_type = self._media_type()
         self.text = self._text()
-        self.photo_caption = self._photo_caption()
+        self.caption = self._caption()
         self.file_id = self._file_id()
-        #self.user_name = update["message"]["from"]["username"]
-        self.user_name = update["message"]["from"].get("username", f" [{unnamed_user}](tg://openmessage?user_id={self.from_id})")
-        self.group_name = update["message"]["chat"].get("username", f" [{unnamed_group}](tg://openmessage?chat_id={str(self.chat_id)[4:]})")
+        # self.user_name = update["message"]["from"]["username"]
+        self.user_name = update["message"]["from"].get(
+            "username", f" [{unnamed_user}](tg://openmessage?user_id={self.from_id})"
+        )
+        self.group_name = update["message"]["chat"].get(
+            "username",
+            f" [{unnamed_group}](tg://openmessage?chat_id={str(self.chat_id)[4:]})",
+        )
         self.message_id: int = update["message"]["message_id"]
 
     def _is_group(self):
@@ -59,19 +97,37 @@ class Update:
         return False
 
     def _type(self):
-        if "text" in self.update["message"]:
-            text = self.update["message"]["text"]
+        msg = self.update["message"]
+        if "text" in msg:
+            text = msg["text"]
             if text.startswith("/") and not text.startswith("/new"):
                 return "command"
             return "text"
-        elif "photo" in self.update["message"]:
+        elif "voice" in msg:
+            return "voice"
+        elif "video_note" in msg:
+            return "video_note"
+        elif "video" in msg:
+            return "video"
+        elif "audio" in msg:
+            return "audio"
+        elif "photo" in msg:
             return "photo"
         else:
             return ""
 
-    def _photo_caption(self):
-        if self.type == "photo":
-            return self.update["message"].get("caption", defaut_photo_caption)
+    def _media_type(self):
+        return self.type if self.type != "text" and self.type != "command" else None
+
+    def _caption(self):
+        if self.media_type is not None:
+            caption = self.update["message"].get("caption")
+            if caption is not None and caption != "":
+                return caption
+            elif self.media_type == "photo":
+                return default_photo_caption
+            else:
+                return default_media_caption
         return ""
 
     def _text(self):
@@ -84,6 +140,15 @@ class Update:
         return ""
 
     def _file_id(self):
-        if self.type == "photo":
-            return self.update["message"]["photo"][-1]["file_id"]
+        msg = self.update["message"]
+        if self.type == "voice":
+            return msg["voice"]["file_id"]
+        elif self.type == "video_note":
+            return msg["video_note"]["file_id"]
+        elif self.type == "video":
+            return msg["video"]["file_id"]
+        elif self.type == "audio":
+            return msg["audio"]["file_id"]
+        elif self.type == "photo":
+            return msg["photo"][-1]["file_id"]
         return ""
