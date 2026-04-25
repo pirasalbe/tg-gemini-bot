@@ -45,14 +45,12 @@ def generate_text_with_image(prompt: str, image_bytes: BytesIO) -> str:
     return result
 
 
-def generate_text_with_file(prompt: str, path: str) -> str:
+def generate_text_with_file(prompt: str, file_bytes: bytes, mime_type: str) -> str:
     """generate text from prompt and file"""
     try:
-        # Upload to Gemini File API
-        file = genai.upload_file(path)
-
         response = client.models.generate_content(
-            model=_MODEL_VERSION, contents=[prompt, file]
+            model=_MODEL_VERSION,
+            contents=[prompt, {"mime_type": mime_type, "data": file_bytes}],
         )
         result = response.text
     except Exception as e:

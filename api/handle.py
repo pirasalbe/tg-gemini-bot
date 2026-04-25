@@ -83,7 +83,12 @@ def handle_message(update_data):
             if is_reply
             else (media_update.caption or "Transcribe or describe this.")
         )
-        chat = MediaChatManager(media_update.media_type, media_update.file_id, prompt)
+        chat = MediaChatManager(
+            media_update.media_type,
+            media_update.mime_type,
+            media_update.file_id,
+            prompt,
+        )
         response_text = chat.send_media()
         print(f"update.message_id {update.message_id}")
         # Use the reply_to_message_id parameter to let the bot reply to
@@ -93,7 +98,6 @@ def handle_message(update_data):
         )
 
         file_url = chat.file_url
-        file_id = media_update.file_id
         if update.is_group:
             log = f"@{update.user_name} id:`{update.from_id}` {group} @{update.group_name} id:`{update.chat_id}`[file]({file_url}),{the_accompanying_message_is}\n{update.caption}\n{the_reply_content_is}\n{response_text}"
         else:

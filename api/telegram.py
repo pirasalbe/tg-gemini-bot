@@ -64,6 +64,12 @@ def get_file_url(file_id) -> str:
     return download_url
 
 
+def get_file_content(file_url):
+    file_res = requests.get(file_url)
+
+    return file_res.content
+
+
 UpdateType = Literal[
     "command", "text", "voice", "video_note", "video", "audio", "photo", ""
 ]
@@ -78,6 +84,7 @@ class Update:
         self.is_group: bool = self._is_group()
         self.type: UpdateType = self._type()
         self.media_type = self._media_type()
+        self.mime_type = self._mime_type()
         self.text = self._text()
         self.caption = self._caption()
         self.file_id = self._file_id()
@@ -152,3 +159,17 @@ class Update:
         elif self.type == "photo":
             return msg["photo"][-1]["file_id"]
         return ""
+
+    def _mime_type(self):
+        msg = self.update["message"]
+        if self.type == "voice":
+            return msg["voice"].get("mime_type", "audio/ogg")
+        elif self.type == "video_note":
+            return msg["video_note"].get("mime_type", "video/mp4")
+        elif self.type == "video":
+            return msg["video"].get("mime_type", "video/mp4")
+        elif self.type == "audio":
+            return msg["audio"].get("mime_type", "audio/mpeg")
+        elif self.type == "photo":
+            return msg["photo"][-1].get("mime_type", "image/jpeg")
+        return "application/octet-stream"

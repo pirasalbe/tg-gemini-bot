@@ -17,7 +17,7 @@ from typing import Dict
 import requests
 
 from .gemini import ChatConversation, generate_text_with_image, generate_text_with_file
-from .telegram import get_file_url
+from .telegram import get_file_content, get_file_url
 
 
 class ChatManager:
@@ -55,28 +55,15 @@ class ImageChatManger:
 
 
 class MediaChatManager:
-    def __init__(self, media_type, file_id, prompt):
+    def __init__(self, media_type, mime_type, file_id, prompt):
         self.media_type = media_type
+        self.mime_type = mime_type
         self.file_id = file_id
         self.prompt = prompt
         self.file_url = get_file_url(self.file_id)
 
     def send_media(self):
-        # Determine extension
-        ext = "ogg" if self.media_type in ["voice", "audio"] else "mp4"
-        if self.media_type == "photo":
-            ext = "jpg"
+        file_bytes = get_file_content(self.file_id)
 
-        local_path = f"temp_{self.file_id}.{ext}"
-
-        try:
-            # Download file
-            resp = requests.get(self.file_url)
-            with open(local_path, "wb") as f:
-                f.write(resp.content)
-
-            response = generate_text_with_file(self.prompt, local_path)
-            return response
-        finally:
-            if os.path.exists(local_path):
-                os.remove(local_path)
+        response = generate_text_with_file(self.prompt, file_bytes)
+        return response
