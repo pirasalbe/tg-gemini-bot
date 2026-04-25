@@ -65,5 +65,5 @@ class MediaChatManager:
     def send_media(self):
         file_bytes = get_file_content(self.file_url)
 
-        response = generate_text_with_file(self.prompt, file_bytes)
+        response = generate_text_with_file(self.prompt, file_bytes, self.mime_type)
         return response
