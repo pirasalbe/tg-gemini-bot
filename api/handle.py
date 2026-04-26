@@ -99,9 +99,9 @@ def handle_message(update_data):
 
         file_url = chat.file_url
         if update.is_group:
-            log = f"@{update.user_name} id:`{update.from_id}` {group} @{update.group_name} id:`{update.chat_id}`[file]({file_url}),{the_accompanying_message_is}\n{update.caption}\n{the_reply_content_is}\n{response_text}"
+            log = f"@{update.user_name} id:`{update.from_id}` {group} @{update.group_name} id:`{update.chat_id}`[file]({file_url}),{the_accompanying_message_is}\n{prompt}\n{the_reply_content_is}\n{response_text}"
         else:
-            log = f"@{update.user_name} id:`{update.from_id}`[file]({file_url}),{the_accompanying_message_is}\n{update.caption}\n{the_reply_content_is}\n{response_text}"
+            log = f"@{update.user_name} id:`{update.from_id}`[file]({file_url}),{the_accompanying_message_is}\n{prompt}\n{the_reply_content_is}\n{response_text}"
         send_log(log)
 
     elif update.type == "text":
