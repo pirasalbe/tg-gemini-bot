@@ -62,12 +62,14 @@ def get_file_url(file_id) -> str:
     r_file_id = requests.get(f"{TELEGRAM_API}/getFile?file_id={file_id}")
     file_path = r_file_id.json().get("result").get("file_path")
     download_url = f"{TELEGRAM_API}/{file_path}"
+    print(f"Found download link for {file_id}: {download_url}")
     return download_url
 
 
 def get_file_content(file_url):
     file_res = requests.get(file_url)
-
+    print(f"Content downloaded [{len(file_res.content)}] from {file_url}")
+    print(f"Content: {file_res.content}")
     return file_res.content
 
 
