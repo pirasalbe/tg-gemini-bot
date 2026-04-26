@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from google import genai
+from google.genai import types
 import PIL.Image
 
 from .config import (
@@ -48,9 +49,10 @@ def generate_text_with_image(prompt: str, image_bytes: BytesIO) -> str:
 def generate_text_with_file(prompt: str, file_bytes: bytes, mime_type: str) -> str:
     """generate text from prompt and file"""
     try:
+        media_part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
         response = client.models.generate_content(
             model=_MODEL_VERSION,
-            contents=[prompt, {"mime_type": mime_type, "data": file_bytes}],
+            contents=[prompt, media_part],
         )
         result = response.text
     except Exception as e:
