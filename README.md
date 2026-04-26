@@ -6,7 +6,7 @@ Super easy, just a single click and you've got it set up on Vercel.
 
 ![screen](./screenshots/screen.png)
 
-🚀 If you don't want to deploy it yourself, you can use this deployment-free telegram bot: [GeminiBot](https://t.me/geminipro_api_bot). This bot is a fork from this project, providing completely identical features.
+This is a fork of: [winniesi/tg-gemini-bot](https://github.com/winniesi/tg-gemini-bot) with some extra features!
 
 ## Features
 
