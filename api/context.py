@@ -11,7 +11,6 @@ such as obtaining photos to addresses and so on.
 """
 
 from io import BytesIO
-import os
 from typing import Dict
 
 import requests
