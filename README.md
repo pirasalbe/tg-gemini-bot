@@ -6,7 +6,7 @@ Super easy, just a single click and you've got it set up on Vercel.
 
 ![screen](./screenshots/screen.png)
 
-This is a fork of: [winniesi/tg-gemini-bot](https://github.com/winniesi/tg-gemini-bot) with some extra features!
+This is a fork of [winniesi/tg-gemini-bot](https://github.com/winniesi/tg-gemini-bot) with some extra features!
 
 ## Features
 
