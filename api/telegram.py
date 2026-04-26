@@ -61,7 +61,7 @@ def get_file_url(file_id) -> str:
     """process telegram photo url"""
     r_file_id = requests.get(f"{TELEGRAM_API}/getFile?file_id={file_id}")
     file_path = r_file_id.json().get("result").get("file_path")
-    download_url = f"{TELEGRAM_API}/{file_path}"
+    download_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
     print(f"Found download link for {file_id}: {download_url}")
     return download_url
 
