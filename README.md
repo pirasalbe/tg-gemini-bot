@@ -1,7 +1,5 @@
 # tg-gemini-bot
 
-[EN](README.md) | [简中](README_zh-CN.md) 
-
 The tg-gemini-bot let's you use Google Gemini services right on your personal Telegram bot.
 
 Super easy, just a single click and you've got it set up on Vercel.
@@ -55,20 +53,21 @@ Get these things ready, and then fill them in as environment variables in Vercel
 
 ## Environment Variable
 
-| Environment Variable | Required | Description                                                                                                                            |
-| -------------------- | --- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| GOOGLE_API_KEY       | YES | Your Google gemini pro api, it looks like `AI2aS4Cl55F9ni9WN84Qn_KWRSuqXvUWkPq6kovc `                                                  |
-| BOT_TOKEN            | YES | The Telegram bot token you applied for, it looks like `67295022320:AAHmfuSQb0ZoUq0ycNPvgzqCCX7I1uzzaSE`                                |
-| ALLOWED_USERS        | No | List the allowed user's Telegram usernames. If there's more than one person, you can separate them using any symbol in `,，;；` or spaces. and it should look like: `name1,name2`.Including the `@` symbol is optional, so either `ohmorningsir` or `@ohmorningsir` is acceptable. No need to be case sensitive. If you do not set a username, you can use id instead. use `/get_my_info` to get. |
-| ALLOWED_GROUPS | No | List the allowed group's Telegram usernames. If there's more than one person, you can separate them using any symbol in `,，;；` or spaces. and it should look like: `group1,group2`.Including the `@` symbol is optional, so either `ohmorningsirs_group` or `@ohmorningsirs_group` is acceptable. No need to be case sensitive. If it is a private group, you can use id instead. use `/get_group_info` to get. |
-| ADMIN_ID | No | ten-digit telegramID. If you want to enable debug mode, this value must be set correctly. |
-| IS_DEBUG_MODE | No | Whether to enable debug mode. `0` to disable. `1` to enable. Default is `0` . |
-| AUCH_ENABLE | No | `0` to disable auth. Anyone can use this bot. `1` to enable auth. Default is `1` . |
-| GROUP_MODE | No | `1` to use common chat history in groups, `2` to record chat history individually for each person. Default is `1` . |
+| Environment Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GOOGLE_API_KEY       | YES      | Your Google gemini pro api, it looks like `AI2aS4Cl55F9ni9WN84Qn_KWRSuqXvUWkPq6kovc `                                                                                                                                                                                                                                                                                                                             |
+| BOT_TOKEN            | YES      | The Telegram bot token you applied for, it looks like `67295022320:AAHmfuSQb0ZoUq0ycNPvgzqCCX7I1uzzaSE`                                                                                                                                                                                                                                                                                                           |
+| ALLOWED_USERS        | No       | List the allowed user's Telegram usernames. If there's more than one person, you can separate them using any symbol in `,，;；` or spaces. and it should look like: `name1,name2`.Including the `@` symbol is optional, so either `ohmorningsir` or `@ohmorningsir` is acceptable. No need to be case sensitive. If you do not set a username, you can use id instead. use `/get_my_info` to get.                 |
+| ALLOWED_GROUPS       | No       | List the allowed group's Telegram usernames. If there's more than one person, you can separate them using any symbol in `,，;；` or spaces. and it should look like: `group1,group2`.Including the `@` symbol is optional, so either `ohmorningsirs_group` or `@ohmorningsirs_group` is acceptable. No need to be case sensitive. If it is a private group, you can use id instead. use `/get_group_info` to get. |
+| ADMIN_ID             | No       | ten-digit telegramID. If you want to enable debug mode, this value must be set correctly.                                                                                                                                                                                                                                                                                                                         |
+| IS_DEBUG_MODE        | No       | Whether to enable debug mode. `0` to disable. `1` to enable. Default is `0` .                                                                                                                                                                                                                                                                                                                                     |
+| AUCH_ENABLE          | No       | `0` to disable auth. Anyone can use this bot. `1` to enable auth. Default is `1` .                                                                                                                                                                                                                                                                                                                                |
+| GROUP_MODE           | No       | `1` to use common chat history in groups, `2` to record chat history individually for each person. Default is `1` .                                                                                                                                                                                                                                                                                               |
 
 Tip: After modifying the environment variables, you need to redeploy them to take effect. You need to enter the internal console of the Vercel project, click the `Deployments` button at the top, select the `···` button to the right of the top item in the list, not the button directly to the right of the "Deployments" title! click `Redeploy` to redeploy.
 
 ## Command list
+
 `/new` Start a new chat
 
 `/get_my_info` Get personal information
@@ -84,8 +83,6 @@ Tip: After modifying the environment variables, you need to redeploy them to tak
 `/get_api_key` Get the list of gemini's apikeys. It is currently useless. Multiple keys may be added automatically in the future. (admin only)
 
 `/help` Get help
-
-`/5g_test` :)
 
 ## Group use
 
@@ -104,4 +101,3 @@ So, if you've done everything step by step just like we talked about and your Te
 ![screen](./screenshots/vercel_logs.png)
 
 3. If there are any error messages, you can open an issue, and then provide the error information.
-
