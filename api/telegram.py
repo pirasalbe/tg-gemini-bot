@@ -2,6 +2,7 @@ import time
 from typing import Dict, Literal
 
 import requests
+import textwrap
 from md2tgmd import escape
 
 from .config import (
@@ -36,6 +37,12 @@ def _split_string_by_limit(text: str) -> list[str]:
     ]
 
 
+def _split_by_words(text: str) -> list[str]:
+    # textwrap.wrap automatically breaks the string at spaces
+    # so words aren't cut in half.
+    return textwrap.wrap(text, width=SEND_MESSAGE_MAX_LENGTH)
+
+
 def _escape_text(text: str) -> str:
     try:
         return escape(text)
@@ -61,14 +68,17 @@ def _send_message_api(chat_id, text, **kwargs):
 def send_message(chat_id, text, **kwargs):
     """send text message"""
     results = []
-    chunks = _split_string_by_limit(text)
+    current_delay = 0.5
+    chunks = _split_by_words(text)
 
     for chunk in chunks:
         result = _send_message_api(chat_id, chunk, **kwargs)
         results.append(result)
         # Short sleep to prevent hitting Telegram's burst rate limit
         if len(chunks) > 1:
-            time.sleep(0.1)
+            print(f"Sleeping for {current_delay:.1f}s...")
+            time.sleep(current_delay)
+            current_delay = min(current_delay + 0.1, 1)
 
     return results
 
