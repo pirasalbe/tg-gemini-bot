@@ -1,3 +1,4 @@
+import time
 from typing import Dict, Literal
 
 import requests
@@ -16,13 +17,38 @@ from .printLog import send_log
 
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
+SEND_MESSAGE_MAX_LENGTH = int(4096 * 0.95)
 
-def send_message(chat_id, text, **kwargs):
+
+def _split_string_by_limit(text: str) -> list[str]:
+    """
+    Splits an input string into a list of smaller strings,
+    each strictly up to the SEND_MESSAGE_MAX_LENGTH.
+    """
+    # Handle empty strings or None gracefully
+    if not text:
+        return []
+
+    # Slice the string into chunks using a step in the range function
+    return [
+        text[i : i + SEND_MESSAGE_MAX_LENGTH]
+        for i in range(0, len(text), SEND_MESSAGE_MAX_LENGTH)
+    ]
+
+
+def _escape_text(text: str) -> str:
+    try:
+        return escape(text)
+    except:
+        return text
+
+
+def _send_message_api(chat_id, text, **kwargs):
     """send text message"""
     print(f"Sending message: {text} to {chat_id}")
     payload = {
         "chat_id": chat_id,
-        "text": escape(text),
+        "text": _escape_text(text),
         "parse_mode": "MarkdownV2",
         **kwargs,
     }
@@ -32,16 +58,32 @@ def send_message(chat_id, text, **kwargs):
     return r
 
 
-def send_imageMessage(chat_id, text, imageID):
+def send_message(chat_id, text, **kwargs):
+    """send text message"""
+    results = []
+    chunks = _split_string_by_limit(text)
+
+    for chunk in chunks:
+        result = _send_message_api(chat_id, chunk, **kwargs)
+        results.append(result)
+        # Short sleep to prevent hitting Telegram's burst rate limit
+        if len(chunks) > 1:
+            time.sleep(0.1)
+
+    return results
+
+
+def send_image_message(chat_id, text, imageID):
     """send image message"""
+    print(f"Sending image message: {text} ({imageID}) to {chat_id}")
     payload = {
         "chat_id": chat_id,
-        "caption": escape(text),
+        "caption": _escape_text(text),
         "parse_mode": "MarkdownV2",
         "photo": imageID,
     }
     r = requests.post(f"{TELEGRAM_API}/sendPhoto", data=payload)
-    print(f"Sent imageMessage: {text} to {chat_id}")
+    print(f"Sent image message: {text} to {chat_id}")
     send_log(f"{send_photo_log}\n```json\n{str(r)}```")
     return r
 
@@ -69,7 +111,7 @@ def get_file_url(file_id) -> str:
 def get_file_content(file_url):
     file_res = requests.get(file_url)
     print(f"Content downloaded [{len(file_res.content)}] from {file_url}")
-    print(f"Content: {file_res.content}")
+    # print(f"Content: {file_res.content}")
     return file_res.content
 
 
